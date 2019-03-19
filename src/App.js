@@ -1,10 +1,35 @@
 import React, { Component } from 'react';
-import logo from './logo.svg';
-import './App.css';
+import MyButtonList from './Components/MyButtonList';
+import MyCardList from './Components/MyCardList';
 
 class App extends Component {
+  
+  state = {
+    entries: [],
+    active : 'europe'
+  };
+  changeRegion(region){
+     this.setState({
+      active: region
+    });
+     this.updateCountryList(region);
+  }
+  componentDidMount() {
+    this.updateCountryList(this.state.active);
+  }
+
+  updateCountryList(region){
+      fetch('https://restcountries.eu/rest/v2/region/'+region)
+      .then(response => response.json())
+      .then(entries => {
+        this.setState({
+          entries
+        });
+      });
+  }
+
   render() {
-    return (
+    /*return (
       <div className="App">
         <header className="App-header">
           <img src={logo} className="App-logo" alt="logo" />
@@ -17,12 +42,18 @@ class App extends Component {
             target="_blank"
             rel="noopener noreferrer"
           >
-            Learn React
+            Learn React whith api key : {process.env.REACT_APP_API_KEY}
           </a>
         </header>
       </div>
-    );
+    );*/
+    console.log('render app');
+    return(
+      <div className="container">
+        <MyButtonList changeRegion= {(region) => this.changeRegion(region)} />
+        <MyCardList entries={this.state.entries} />
+      </div>
+      );
   }
 }
-
 export default App;
