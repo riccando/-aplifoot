@@ -13,11 +13,26 @@ const items = [
 
 class MyButtonList extends Component {
 
-  state = { active: 'europe' }
+  constructor(props) {
+    super(props);
+    this.myRef = React.createRef();
+    this.state = { active: ['europe'] };
+  }
+  
 
   handleClick(name) {
-    this.props.changeRegion(name);
-    this.setState({active: name});
+    let tmp = this.state.active;
+    if(tmp.indexOf(name) >= 0){
+      if(tmp.length > 1){
+        tmp.splice(tmp.indexOf(name), 1);    
+      }
+      
+    }else{
+      tmp.push(name);
+    }
+    this.setState({active: tmp});
+    this.props.changeRegion(tmp);
+    this.props.filterText(this.myRef.current.value,tmp);
   }
 
   filterList(event){
@@ -27,19 +42,19 @@ class MyButtonList extends Component {
 
   
   render() {
+
     const BtnList = items.map(item=>
       <Button 
         key ={item.id}
         variant="outline-primary"
-        className={this.state.active === item.name ? 'active' : ''}
+        className={this.state.active.includes(item.name) ? 'active' : ''}
         onClick={this.handleClick.bind(this, item.name)}
         >
         {item.text}
         </Button>
     );
-    const region = this.state.active;
     const fText = (
-        <Form.Control type="text" placeholder="Nom du pays" onChange={this.filterList.bind(this)}/>
+        <Form.Control type="text" placeholder="Nom du pays" onChange={this.filterList.bind(this)} ref={this.myRef}/>
       );
     return(
         <div>
